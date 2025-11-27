@@ -21,10 +21,10 @@ export default function IntroPage() {
 
       {/* 메인 콘텐츠 - 이미지 위에 오버레이 */}
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
-        {/* 타이틀 - 이미지에 이미 있으므로 필요시 숨김 또는 스타일 조정 */}
-        {/* <h1 className="text-6xl md:text-7xl font-bold text-black mb-12 font-serif tracking-tight drop-shadow-lg">
+        {/* 타이틀 - 상단 중앙에 배치 */}
+        <h1 className="absolute top-16 left-1/2 transform -translate-x-1/2 text-6xl font-bold text-black font-serif tracking-tight drop-shadow-lg z-20">
           THIS IS ME!
-        </h1> */}
+        </h1>
 
         {/* 시작 버튼 - 이미지의 오른쪽 하단에 배치 */}
         <div className="absolute bottom-8 right-8">

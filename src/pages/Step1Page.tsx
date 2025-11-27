@@ -8,9 +8,17 @@ export default function Step1Page() {
   const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<UserInfo>()
   
-  const [colorOptions, setColorOptions] = useState<string[]>([])
-  const [foodOptions, setFoodOptions] = useState<string[]>([])
-  const [hobbyOptions, setHobbyOptions] = useState<string[]>([])
+  // 기본값 정의
+  const defaultOptions = {
+    color: ['red', 'blue', 'green', 'yellow', 'purple'],
+    food: ['pizza', 'apple', 'ice cream', 'hamburger', 'banana'],
+    hobby: ['reading books', 'playing soccer', 'drawing pictures', 'singing songs', 'dancing'],
+  }
+
+  // 초기 상태에 기본값 설정
+  const [colorOptions, setColorOptions] = useState<string[]>(defaultOptions.color)
+  const [foodOptions, setFoodOptions] = useState<string[]>(defaultOptions.food)
+  const [hobbyOptions, setHobbyOptions] = useState<string[]>(defaultOptions.hobby)
   const [loadingColor, setLoadingColor] = useState(false)
   const [loadingFood, setLoadingFood] = useState(false)
   const [loadingHobby, setLoadingHobby] = useState(false)
@@ -107,12 +115,8 @@ export default function Step1Page() {
     }
   }, [colorOptions, foodOptions, hobbyOptions, selectedColor, selectedFood, selectedHobby]) // 값 변경 시에도 재설정
 
-  // 초기 옵션 로드
-  useEffect(() => {
-    loadColorOptions()
-    loadFoodOptions()
-    loadHobbyOptions()
-  }, [])
+  // 초기 옵션은 기본값으로 표시되므로 자동 로드하지 않음
+  // refresh 버튼을 눌렀을 때만 API 호출
 
   const loadColorOptions = async () => {
     setLoadingColor(true)
@@ -123,8 +127,8 @@ export default function Step1Page() {
       setColorOptions(options.slice(0, 5)) // 최대 5개만 표시
     } catch (error) {
       console.error('Failed to load color options:', error)
-      // 에러 발생 시 빈 배열로 설정
-      setColorOptions([])
+      // 에러 발생 시 기본값으로 복원
+      setColorOptions(defaultOptions.color)
     } finally {
       setLoadingColor(false)
     }
@@ -139,8 +143,8 @@ export default function Step1Page() {
       setFoodOptions(options.slice(0, 5)) // 최대 5개만 표시
     } catch (error) {
       console.error('Failed to load food options:', error)
-      // 에러 발생 시 빈 배열로 설정
-      setFoodOptions([])
+      // 에러 발생 시 기본값으로 복원
+      setFoodOptions(defaultOptions.food)
     } finally {
       setLoadingFood(false)
     }
@@ -155,8 +159,8 @@ export default function Step1Page() {
       setHobbyOptions(options.slice(0, 5)) // 최대 5개만 표시
     } catch (error) {
       console.error('Failed to load hobby options:', error)
-      // 에러 발생 시 빈 배열로 설정
-      setHobbyOptions([])
+      // 에러 발생 시 기본값으로 복원
+      setHobbyOptions(defaultOptions.hobby)
     } finally {
       setLoadingHobby(false)
     }
@@ -277,13 +281,18 @@ export default function Step1Page() {
                     type="button"
                     onClick={loadColorOptions}
                     disabled={loadingColor}
-                    className="w-6 h-6 rounded-full bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center text-xs flex-shrink-0 transition-all"
+                    className="w-7 h-7 rounded-lg bg-orange-300 hover:bg-orange-400 disabled:bg-orange-200 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 transition-all shadow-sm hover:shadow-md active:scale-95"
                     title="새로운 옵션 생성"
                   >
                     {loadingColor ? (
-                      <span className="animate-spin text-xs">⏳</span>
+                      <svg className="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
                     ) : (
-                      '🔄'
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
                     )}
                   </button>
                 </div>
@@ -342,13 +351,18 @@ export default function Step1Page() {
                     type="button"
                     onClick={loadFoodOptions}
                     disabled={loadingFood}
-                    className="w-6 h-6 rounded-full bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center text-xs flex-shrink-0 transition-all"
+                    className="w-7 h-7 rounded-lg bg-orange-300 hover:bg-orange-400 disabled:bg-orange-200 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 transition-all shadow-sm hover:shadow-md active:scale-95"
                     title="새로운 옵션 생성"
                   >
                     {loadingFood ? (
-                      <span className="animate-spin text-xs">⏳</span>
+                      <svg className="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
                     ) : (
-                      '🔄'
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
                     )}
                   </button>
                 </div>
@@ -407,13 +421,18 @@ export default function Step1Page() {
                     type="button"
                     onClick={loadHobbyOptions}
                     disabled={loadingHobby}
-                    className="w-6 h-6 rounded-full bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center text-xs flex-shrink-0 transition-all"
+                    className="w-7 h-7 rounded-lg bg-orange-300 hover:bg-orange-400 disabled:bg-orange-200 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 transition-all shadow-sm hover:shadow-md active:scale-95"
                     title="새로운 옵션 생성"
                   >
                     {loadingHobby ? (
-                      <span className="animate-spin text-xs">⏳</span>
+                      <svg className="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
                     ) : (
-                      '🔄'
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
                     )}
                   </button>
                 </div>
