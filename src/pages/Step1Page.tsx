@@ -171,11 +171,11 @@ export default function Step1Page() {
   }
 
   return (
-    <div className="w-[1280px] h-[800px] bg-[#F5F5DC] px-4 py-8">
+    <div className="w-[1280px] h-[800px] px-4 py-6 overflow-y-auto" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)' }}>
       <div className="max-w-3xl mx-auto">
         {/* 헤더 */}
         <div className="flex items-center gap-4 mb-6">
-          <div className="bg-orange-500 text-white font-bold py-2 px-4 rounded-lg">
+          <div className="bg-orange-500 text-white font-bold py-2 px-4 rounded-lg shadow-md">
             Step 1
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-black">
@@ -185,19 +185,22 @@ export default function Step1Page() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* 필수 필드 - Name */}
-          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center gap-4">
-              <div className="bg-orange-300 text-gray-800 font-bold py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0">
-                Name
+              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+                <span>Name</span>
               </div>
               <div className="flex-1 border-l-2 border-orange-200 pl-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-gray-600">My name is</span>
+                  <span className="text-[16.94px] text-gray-600">My name is</span>
                   <input
                     type="text"
-                    {...register('name', { required: '이름을 입력해주세요' })}
+                    {...register('name', { required: 'Please enter your name' })}
                     name="name"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
                     style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -210,23 +213,26 @@ export default function Step1Page() {
           </div>
 
           {/* 필수 필드 - Age */}
-          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center gap-4">
-              <div className="bg-orange-300 text-gray-800 font-bold py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0">
-                Age
+              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                </svg>
+                <span>Age</span>
               </div>
               <div className="flex-1 border-l-2 border-orange-200 pl-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-gray-600">I am</span>
+                  <span className="text-[16.94px] text-gray-600">I am</span>
                   <input
                     type="text"
-                    {...register('age', { required: '나이를 입력해주세요' })}
+                    {...register('age', { required: 'Please enter your age' })}
                     name="age"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
                     style={{ minWidth: '48px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
-                  <span className="text-sm text-gray-600">years old.</span>
+                  <span className="text-[16.94px] text-gray-600">years old.</span>
                 </div>
               </div>
             </div>
@@ -236,19 +242,22 @@ export default function Step1Page() {
           </div>
 
           {/* 필수 필드 - Town */}
-          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center gap-4">
-              <div className="bg-orange-300 text-gray-800 font-bold py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0">
-                Town
+              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                <span>Town</span>
               </div>
               <div className="flex-1 border-l-2 border-orange-200 pl-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-gray-600">I live in</span>
+                  <span className="text-[16.94px] text-gray-600">I live in</span>
                   <input
                     type="text"
-                    {...register('town', { required: '사는 곳을 입력해주세요' })}
+                    {...register('town', { required: 'Please enter where you live' })}
                     name="town"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
                     style={{ minWidth: '120px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -261,19 +270,22 @@ export default function Step1Page() {
           </div>
 
           {/* 선택 필드 - Color */}
-          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center gap-4 mb-2">
-              <div className="bg-orange-300 text-gray-800 font-bold py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0">
-                Color
+              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                </svg>
+                <span>Color</span>
               </div>
               <div className="flex-1 border-l-2 border-orange-200 pl-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-gray-600">My favorite color is</span>
+                  <span className="text-[16.94px] text-gray-600">My favorite color is</span>
                   <input
                     type="text"
                     {...register('color')}
                     name="color"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
                     style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -331,19 +343,22 @@ export default function Step1Page() {
           </div>
 
           {/* 선택 필드 - Food */}
-          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center gap-4 mb-2">
-              <div className="bg-orange-300 text-gray-800 font-bold py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0">
-                Food
+              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                </svg>
+                <span>Food</span>
               </div>
               <div className="flex-1 border-l-2 border-orange-200 pl-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-gray-600">My favorite food is</span>
+                  <span className="text-[16.94px] text-gray-600">My favorite food is</span>
                   <input
                     type="text"
                     {...register('food')}
                     name="food"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
                     style={{ minWidth: '120px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -401,19 +416,22 @@ export default function Step1Page() {
           </div>
 
           {/* 선택 필드 - Hobby */}
-          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center gap-4 mb-2">
-              <div className="bg-orange-300 text-gray-800 font-bold py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0">
-                Hobby
+              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span>Hobby</span>
               </div>
               <div className="flex-1 border-l-2 border-orange-200 pl-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-gray-600">My hobby is</span>
+                  <span className="text-[16.94px] text-gray-600">My hobby is</span>
                   <input
                     type="text"
                     {...register('hobby')}
                     name="hobby"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
                     style={{ minWidth: '144px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -474,9 +492,9 @@ export default function Step1Page() {
           <div className="flex justify-end mt-6">
             <button
               type="submit"
-              className="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
             >
-              Next
+              Next →
             </button>
           </div>
         </form>

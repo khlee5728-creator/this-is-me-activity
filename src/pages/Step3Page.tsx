@@ -47,7 +47,7 @@ export default function Step3Page() {
           setImageError(false)
         }
         
-        img.onerror = (e) => {
+        img.onerror = () => {
           clearTimeout(timeout)
           setImageLoaded(true)
           setImageError(true)
@@ -77,7 +77,7 @@ export default function Step3Page() {
       }
 
       const canvas = await html2canvas(captureRef.current, {
-        backgroundColor: '#F5F5DC',
+        backgroundColor: '#FFF9E6',
         scale: 2,
         useCORS: true,
         allowTaint: displayImageUrl.startsWith('data:'), // base64 이미지인 경우 true
@@ -124,17 +124,17 @@ export default function Step3Page() {
   }
 
   return (
-    <div className="w-[1280px] h-[800px] bg-[#F5F5DC] flex flex-col">
+    <div className="w-[1280px] h-[800px] flex flex-col overflow-hidden" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)' }}>
       {/* 타이틀 */}
-      <h1 className="text-5xl md:text-6xl font-bold text-black text-center py-6 font-serif">
+      <h1 className="text-5xl md:text-6xl font-bold text-black text-center py-6 font-serif flex-shrink-0 drop-shadow-md">
         THIS IS ME!
       </h1>
 
       {/* 메인 콘텐츠 영역 (캡처 대상) */}
-      <div ref={captureRef} className="flex-1 flex items-center justify-center px-8 pb-8">
+      <div ref={captureRef} className="flex-1 flex items-center justify-center px-8 pb-4 min-h-0" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)' }}>
         <div className="grid grid-cols-2 gap-6 w-full max-w-[1200px]">
           {/* 왼쪽 패널: 생성된 이미지 */}
-          <div className="bg-white rounded-lg p-6 border border-amber-200 flex items-center justify-center overflow-hidden min-h-[400px]">
+          <div className="bg-white rounded-2xl p-6 border-2 border-orange-200 shadow-xl flex items-center justify-center overflow-hidden min-h-[400px]">
             {displayImageUrl ? (
               imageError ? (
                 <div className="text-center text-gray-400 p-4">
@@ -169,7 +169,7 @@ export default function Step3Page() {
           </div>
 
           {/* 오른쪽 패널: 자기소개 텍스트 */}
-          <div className="bg-white rounded-lg p-8 border border-amber-200 flex items-start">
+          <div className="bg-white rounded-2xl p-8 border-2 border-orange-200 shadow-xl flex items-start">
             <div className="space-y-8 text-xl text-gray-800 leading-loose w-full">
               <p className="break-words py-3 whitespace-normal">
                 <span className="font-semibold">Hello! My name is </span>
@@ -202,7 +202,7 @@ export default function Step3Page() {
               )}
               {userInfo.hobby && (
                 <p className="break-words py-3 whitespace-normal">
-                  <span className="font-semibold">I can </span>
+                  <span className="font-semibold">My hobby is </span>
                   <span>{userInfo.hobby}</span>
                   <span>.</span>
                 </p>
@@ -213,20 +213,25 @@ export default function Step3Page() {
       </div>
 
       {/* 버튼 영역 */}
-      <div className="flex justify-center gap-4 pb-6">
+      <div className="flex justify-center gap-6 pb-6 flex-shrink-0">
         <button
           onClick={handleDownload}
           disabled={isDownloading || !imageLoaded}
-          className="bg-green-400 hover:bg-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-lg transition-colors flex items-center gap-2"
+          className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-10 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 disabled:transform-none flex items-center gap-2"
         >
-          <span>⬇️</span>
-          <span>{isDownloading ? '다운로드 중...' : 'Download'}</span>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>{isDownloading ? 'Downloading...' : 'Download'}</span>
         </button>
         <button
           onClick={handlePlayAgain}
-          className="bg-green-400 hover:bg-green-500 text-white font-semibold py-3 px-8 rounded-lg transition-colors flex items-center gap-2"
+          className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2"
         >
-          <span>▶️</span>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           <span>Play Again</span>
         </button>
       </div>
