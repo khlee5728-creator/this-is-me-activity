@@ -2,12 +2,15 @@ export interface UserInfo {
   name: string
   age: string
   town: string
+  gender?: string
+  hairColor?: string
+  hairStyle?: string
   color?: string
   food?: string
   hobby?: string
 }
 
-export type ImageStyle = 'cartoon' | 'fairytale' | 'superhero' | 'lego' | 'fantasy'
+export type ImageStyle = 'pixar' | 'pixelart' | 'superhero' | 'lego' | 'stickerpack'
 
 export interface GeneratedImage {
   imageUrl: string

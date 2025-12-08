@@ -12,12 +12,75 @@ export const api = axios.create({
   },
 })
 
+// OpenAI Chat Completions API를 통한 자기소개 글 생성
+export const generateIntroduction = async (userInfo: {
+  name: string
+  age: string
+  town: string
+  gender?: string
+  hairColor?: string
+  hairStyle?: string
+  color?: string
+  food?: string
+  hobby?: string
+}) => {
+  // Step1에서 입력한 정보를 바탕으로 자기소개 글 생성
+  const userInfoText = [
+    `Name: ${userInfo.name}`,
+    `Age: ${userInfo.age} years old`,
+    `Location: ${userInfo.town}`,
+    userInfo.gender && `Gender: ${userInfo.gender}`,
+    userInfo.hairColor && `Hair color: ${userInfo.hairColor}`,
+    userInfo.hairStyle && `Hair style: ${userInfo.hairStyle}`,
+    userInfo.color && `Favorite color: ${userInfo.color}`,
+    userInfo.food && `Favorite food: ${userInfo.food}`,
+    userInfo.hobby && `Hobby: ${userInfo.hobby}`,
+  ]
+    .filter(Boolean)
+    .join('\n')
+
+  const prompt = `Based on the following information about a student, write a friendly and natural self-introduction paragraph in English for elementary students. Make it warm, engaging, and easy to understand. Write it as if the student is speaking about themselves. Keep it to 3-5 sentences.
+
+Student information:
+${userInfoText}
+
+Write a self-introduction paragraph:`
+
+  try {
+    const response = await api.post('/chat/completions', {
+      model: 'gpt-4',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an English teacher helping elementary students write self-introductions. Write in simple, friendly English that elementary students can understand and relate to.',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 300,
+    })
+
+    const content = response.data.choices?.[0]?.message?.content || ''
+    return { introduction: content.trim() }
+  } catch (error) {
+    console.error('API Error:', error)
+    // Fallback: 기본 자기소개 글 생성
+    const fallback = `Hello! My name is ${userInfo.name}. I am ${userInfo.age} years old. I live in ${userInfo.town}.`
+    return { introduction: fallback }
+  }
+}
+
 // OpenAI Chat Completions API를 통한 문항 옵션 생성 (5개씩 생성)
-export const generateQuestionOptions = async (type: 'color' | 'food' | 'hobby') => {
+export const generateQuestionOptions = async (type: 'color' | 'food' | 'hobby' | 'hairColor' | 'hairStyle') => {
   const prompts = {
     color: 'Generate exactly 5 different simple English color names for elementary students. Return only a JSON array with exactly 5 color names. Example format: ["red", "blue", "green", "yellow", "purple"]',
     food: 'Generate exactly 5 different simple English food names for elementary students. Return only a JSON array with exactly 5 food names. Example format: ["pizza", "apple", "ice cream", "hamburger", "banana"]',
     hobby: 'Generate exactly 5 different simple English hobby/activity phrases for elementary students. Return only a JSON array with exactly 5 phrases. Example format: ["reading books", "playing soccer", "drawing pictures", "singing songs", "dancing"]',
+    hairColor: 'Generate exactly 5 different simple English hair color names for elementary students. Return only a JSON array with exactly 5 hair color names. Example format: ["black", "brown", "blonde", "red", "orange"]',
+    hairStyle: 'Generate exactly 5 different simple English hair style descriptions for elementary students. Return only a JSON array with exactly 5 hair style words. Example format: ["short", "long", "curly", "straight", "wavy"]',
   }
 
   try {
@@ -55,6 +118,8 @@ export const generateQuestionOptions = async (type: 'color' | 'food' | 'hobby') 
           color: ['red', 'blue', 'green', 'yellow', 'purple'],
           food: ['pizza', 'apple', 'ice cream', 'hamburger', 'banana'],
           hobby: ['reading books', 'playing soccer', 'drawing pictures', 'singing songs', 'dancing'],
+          hairColor: ['black', 'brown', 'blonde', 'red', 'orange'],
+          hairStyle: ['short', 'long', 'curly', 'straight', 'wavy'],
         }
         const defaultOptions = defaults[type] || []
         options = [...options, ...defaultOptions].slice(0, 5)
@@ -67,6 +132,8 @@ export const generateQuestionOptions = async (type: 'color' | 'food' | 'hobby') 
         color: ['red', 'blue', 'green', 'yellow', 'purple'],
         food: ['pizza', 'apple', 'ice cream', 'hamburger', 'banana'],
         hobby: ['reading books', 'playing soccer', 'drawing pictures', 'singing songs', 'dancing'],
+        hairColor: ['black', 'brown', 'blonde', 'red', 'orange'],
+        hairStyle: ['short', 'long', 'curly', 'straight', 'wavy'],
       }
       options = defaults[type] || []
     }
@@ -78,46 +145,168 @@ export const generateQuestionOptions = async (type: 'color' | 'food' | 'hobby') 
       color: ['red', 'blue', 'green', 'yellow', 'purple'],
       food: ['pizza', 'apple', 'ice cream', 'hamburger', 'banana'],
       hobby: ['reading books', 'playing soccer', 'drawing pictures', 'singing songs', 'dancing'],
+      hairColor: ['black', 'brown', 'blonde', 'red', 'orange'],
+      hairStyle: ['short', 'long', 'curly', 'straight', 'wavy'],
     }
     return { options: defaults[type] || [] }
+  }
+}
+
+// 텍스트 기반 이미지 생성 (자기소개 텍스트로 이미지 생성)
+export const generateImageFromText = async (
+  introduction: string,
+  style: 'pixar' | 'pixelart' | 'superhero' | 'lego' | 'stickerpack'
+) => {
+  const stylePrompts = {
+    pixar: 'Create a Pixar-style 3D character illustration. Use smooth 3D rendering, glossy textures, and warm cinematic lighting. Apply a friendly and cute vibe similar to modern animated movies. Use a simple gradient or softly blurred background.',
+    pixelart: 'Create a pixel art character illustration. Use 16-bit or 32-bit style pixel shading with clean blocky shapes. Maintain strong silhouettes and simplified colors. Use a transparent or solid single-color background.',
+    superhero: 'Create a superhero-style illustration. Use bold outlines, vivid comic-book colors, and dynamic lighting. Add subtle heroic elements like a simple cape shape or strong pose, but avoid copyrighted costumes. Use a clean gradient background for focus.',
+    lego: 'Create a LEGO-style 3D character illustration. Use plastic-like block textures, large round eyes, and minimal facial details. Use bright primary colors and simple shapes. Place the character on a plain white or light background.',
+    stickerpack: 'Create a sticker-style character illustration. Use bold outlines, bright colors, and minimal shading. Add a white sticker border around the character. Use a transparent background so it can be used as a sticker.',
+  }
+
+  // 자기소개 텍스트와 스타일을 조합한 프롬프트 생성
+  const prompt = `${introduction}\n\n${stylePrompts[style]}`
+
+  try {
+    // DALL-E 3 text-to-image API 호출
+    const response = await api.post('/images/generations', {
+      model: 'dall-e-3',
+      prompt: prompt,
+      n: 1,
+      size: '1024x1024',
+      quality: 'standard',
+      style: style,
+      response_format: 'b64_json', // base64 반환 요청
+    }, {
+      timeout: 120000,
+    })
+
+    console.log('백엔드 응답:', response.data)
+
+    const imageData = response.data?.data?.[0]
+    const b64Json = imageData?.b64_json
+    const imageUrl = imageData?.url
+
+    if (b64Json) {
+      const dataUrl = `data:image/png;base64,${b64Json}`
+      return {
+        imageUrl: dataUrl,
+        style: style,
+      }
+    } else if (imageUrl) {
+      return {
+        imageUrl: imageUrl,
+        style: style,
+      }
+    } else {
+      throw new Error('이미지 데이터가 없습니다.')
+    }
+  } catch (error: any) {
+    console.error('Image generation error:', error)
+    throw new Error(error?.response?.data?.error?.message || '이미지 생성 중 오류가 발생했습니다.')
   }
 }
 
 // OpenAI Images Generations API를 통한 이미지 스타일 변환
 export const transformImage = async (
   imageFile: File,
-  style: 'cartoon' | 'fairytale' | 'superhero' | 'lego' | 'fantasy'
+  style: 'pixar' | 'pixelart' | 'superhero' | 'lego' | 'stickerpack'
 ) => {
   const stylePrompts = {
-    cartoon: 'Using the uploaded image as the base reference, transform it into a vibrant cartoon style suitable for children. CRITICAL: The output must be a stylized transformation of the EXACT same person in the uploaded image. Preserve: exact facial features, facial structure, face shape, eye color, hair color and style, pose, body position, clothing, background, and all compositional elements. Do NOT create a new person or different image. The result should look like the same person from the uploaded photo, but drawn in cartoon style.',
-    fairytale: 'Using the uploaded image as the base reference, transform it into a beautiful fairy tale illustration style. CRITICAL: The output must be a stylized transformation of the EXACT same person in the uploaded image. Preserve: exact facial features, facial structure, face shape, eye color, hair color and style, pose, body position, clothing, background, and all compositional elements. Do NOT create a new person or different image. The result should look like the same person from the uploaded photo, but drawn in fairy tale illustration style.',
-    superhero: 'Using the uploaded image as the base reference, transform it into a superhero comic book style. CRITICAL: The output must be a stylized transformation of the EXACT same person in the uploaded image. Preserve: exact facial features, facial structure, face shape, eye color, hair color and style, pose, body position, clothing, background, and all compositional elements. Do NOT create a new person or different image. The result should look like the same person from the uploaded photo, but drawn in superhero comic book style.',
-    lego: 'Using the uploaded image as the base reference, transform it into a LEGO brick minifigure style. CRITICAL: The output must be a stylized transformation of the EXACT same person in the uploaded image. Preserve: exact facial features, facial structure, face shape, eye color, hair color and style, pose, body position, clothing, background, and all compositional elements. Do NOT create a new person or different image. The result should look like the same person from the uploaded photo, but rendered in LEGO minifigure style.',
-    fantasy: 'Using the uploaded image as the base reference, transform it into a fantasy art style. CRITICAL: The output must be a stylized transformation of the EXACT same person in the uploaded image. Preserve: exact facial features, facial structure, face shape, eye color, hair color and style, pose, body position, clothing, background, and all compositional elements. Do NOT create a new person or different image. The result should look like the same person from the uploaded photo, but drawn in fantasy art style.',
+    pixar: 'Stylize the uploaded photo. Make the result match this style: CRITICAL: Preserve the EXACT person from the original image. Create a Pixar-style 3D character based on the uploaded photo. Keep the person\'s key facial features recognizable, with expressive large eyes and soft facial proportions. Use smooth 3D rendering, glossy textures, and warm cinematic lighting. Apply a friendly and cute vibe similar to modern animated movies. Use a simple gradient or softly blurred background. Keep IDENTICAL facial features, hair color, hair style, eye color, skin tone, body shape, pose, and clothing. The person must be recognizable as the same individual, just rendered in Pixar 3D animation style. Do NOT change the person\'s appearance, only the rendering style to Pixar 3D animation.',
+    pixelart: 'Stylize the uploaded photo. Make the result match this style: CRITICAL: Preserve the EXACT person from the original image. Create a pixel art character based on the uploaded photo. Keep the person\'s key facial features and hairstyle recognizable within pixel limitations. Use 16-bit or 32-bit style pixel shading with clean blocky shapes. Maintain strong silhouettes and simplified colors. Use a transparent or solid single-color background. Keep IDENTICAL facial features, hair color, hair style, eye color, skin tone, body shape, pose, and clothing. The person must be recognizable as the same individual, just rendered in pixel art style. Do NOT change the person\'s appearance, only the rendering style to pixel art.',
+    superhero: 'Stylize the uploaded photo. Make the result match this style: CRITICAL: Preserve the EXACT person from the original image. Create a superhero-style illustration based on the uploaded photo. Maintain the person\'s facial features and hairstyle, stylized but recognizable. Use bold outlines, vivid comic-book colors, and dynamic lighting. Add subtle heroic elements like a simple cape shape or strong pose, but avoid copyrighted costumes. Use a clean gradient background for focus. Keep IDENTICAL facial features, hair color, hair style, eye color, skin tone, body shape, and pose. The person must be recognizable as the same individual, just rendered in superhero comic book style. Do NOT change the person\'s appearance, only the rendering style to superhero illustration.',
+    lego: 'Stylize the uploaded photo. Make the result match this style: CRITICAL: Preserve the EXACT person from the original image. Transform the uploaded photo into a LEGO-style 3D character. Keep the essential facial features and hairstyle recognizable, but simplified into LEGO proportions. Use plastic-like block textures, large round eyes, and minimal facial details. Use bright primary colors and simple shapes. Place the character on a plain white or light background. Keep IDENTICAL facial features, hair color, hair style, eye color, skin tone, body shape, pose, and clothing. The person must be recognizable as the same individual, just rendered as a LEGO minifigure. Do NOT change the person\'s appearance, only the rendering style to LEGO 3D character.',
+    stickerpack: 'Stylize the uploaded photo. Make the result match this style: CRITICAL: Preserve the EXACT person from the original image. Create a sticker-style character illustration based on the uploaded photo. Keep the person\'s main facial features recognizable but simplified into cute, clean shapes. Use bold outlines, bright colors, and minimal shading. Add a white sticker border around the character. Use a transparent background so it can be used as a sticker. Keep IDENTICAL facial features, hair color, hair style, eye color, skin tone, body shape, pose, and clothing. The person must be recognizable as the same individual, just rendered in sticker pack style. Do NOT change the person\'s appearance, only the rendering style to sticker illustration.',
   }
 
   try {
-    // 이미지를 base64로 변환
-    const base64Image = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const base64String = reader.result as string
+    // 이미지를 정사각형으로 리사이즈/크롭하고 base64로 변환
+    // DALL-E 2는 정사각형 이미지만 지원하므로 정사각형으로 변환 필요
+    // 이미지 전처리 개선: 최소 크기 보장, 고품질 스케일링 필터 적용
+    const { base64Image, imageSize } = await new Promise<{ base64Image: string; imageSize: number }>((resolve, reject) => {
+      const img = new Image()
+      const objectUrl = URL.createObjectURL(imageFile)
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        
+        if (!ctx) {
+          URL.revokeObjectURL(objectUrl)
+          reject(new Error('Canvas context를 가져올 수 없습니다.'))
+          return
+        }
+        
+        // 정사각형 크기 결정 (더 긴 쪽을 기준으로)
+        // 최소 1024x1024 크기 보장 (DALL-E 2 최적 해상도)
+        const originalSize = Math.max(img.width, img.height)
+        const finalSize = Math.max(originalSize, 1024)
+        canvas.width = finalSize
+        canvas.height = finalSize
+        
+        // 고품질 이미지 스케일링 필터 활성화
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        
+        // 흰색 배경으로 채우기
+        ctx.fillStyle = 'white'
+        ctx.fillRect(0, 0, finalSize, finalSize)
+        
+        // 이미지를 중앙에 배치 (비율 유지)
+        // 원본 이미지가 작은 경우 고품질로 업스케일링
+        const offsetX = (finalSize - img.width) / 2
+        const offsetY = (finalSize - img.height) / 2
+        ctx.drawImage(img, offsetX, offsetY, img.width, img.height)
+        
+        // base64로 변환 (PNG 최고 품질)
+        const base64String = canvas.toDataURL('image/png', 1.0)
         const base64 = base64String.split(',')[1] || base64String
-        resolve(base64)
+        URL.revokeObjectURL(objectUrl)
+        resolve({ base64Image: base64, imageSize: finalSize })
       }
-      reader.onerror = reject
-      reader.readAsDataURL(imageFile)
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl)
+        reject(new Error('이미지 로드 실패'))
+      }
+      img.src = objectUrl
+    })
+
+    // 마스크 이미지 생성 (전체 영역을 편집하기 위한 흰색 마스크)
+    // ⚠️ 중요: DALL-E 2 이미지 편집 API는 마스크가 필수입니다!
+    // 마스크가 없으면 DALL-E 2는 원본 이미지를 무시하고 프롬프트만으로 새 이미지를 생성합니다.
+    const maskImage = await new Promise<string>((resolve, reject) => {
+      const canvas = document.createElement('canvas')
+      canvas.width = imageSize
+      canvas.height = imageSize
+      const ctx = canvas.getContext('2d')
+      
+      if (!ctx) {
+        reject(new Error('Canvas context를 가져올 수 없습니다.'))
+        return
+      }
+      
+      // 흰색으로 전체 영역 채우기 (전체 이미지 편집)
+      // 흰색 영역 = 편집할 영역, 검은색 영역 = 유지할 영역
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      
+      // base64로 변환
+      const maskBase64 = canvas.toDataURL('image/png').split(',')[1]
+      resolve(maskBase64)
     })
 
     // JSON 방식으로 전송 (백엔드가 FormData를 제대로 처리하지 못할 수 있으므로 JSON 우선)
+    // this-is-me-activity는 DALL-E 2 전용 엔드포인트 사용
     try {
-      const response = await api.post('/images/generations', {
-        model: 'dall-e-3',
+      const response = await api.post('/images/generations/dall-e-2', {
+        model: 'dall-e-2',
         prompt: stylePrompts[style],
         n: 1,
         size: '1024x1024',
-        quality: 'standard',
-        image: base64Image,
+        image: base64Image, // 정사각형으로 변환된 원본 이미지
+        mask: maskImage, // 마스크 (필수! 없으면 원본 이미지가 무시됨)
         style: style,
         response_format: 'b64_json', // base64 반환 요청
       }, {

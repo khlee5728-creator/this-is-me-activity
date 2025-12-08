@@ -13,19 +13,28 @@ export default function Step1Page() {
     color: ['red', 'blue', 'green', 'yellow', 'purple'],
     food: ['pizza', 'apple', 'ice cream', 'hamburger', 'banana'],
     hobby: ['reading books', 'playing soccer', 'drawing pictures', 'singing songs', 'dancing'],
+    hairColor: ['black', 'brown', 'blonde', 'red', 'orange'],
+    hairStyle: ['short', 'long', 'curly', 'straight', 'wavy'],
   }
 
   // 초기 상태에 기본값 설정
   const [colorOptions, setColorOptions] = useState<string[]>(defaultOptions.color)
   const [foodOptions, setFoodOptions] = useState<string[]>(defaultOptions.food)
   const [hobbyOptions, setHobbyOptions] = useState<string[]>(defaultOptions.hobby)
+  const [hairColorOptions, setHairColorOptions] = useState<string[]>(defaultOptions.hairColor)
+  const [hairStyleOptions, setHairStyleOptions] = useState<string[]>(defaultOptions.hairStyle)
   const [loadingColor, setLoadingColor] = useState(false)
   const [loadingFood, setLoadingFood] = useState(false)
   const [loadingHobby, setLoadingHobby] = useState(false)
+  const [loadingHairColor, setLoadingHairColor] = useState(false)
+  const [loadingHairStyle, setLoadingHairStyle] = useState(false)
 
+  const selectedGender = watch('gender')
   const selectedColor = watch('color')
   const selectedFood = watch('food')
   const selectedHobby = watch('hobby')
+  const selectedHairColor = watch('hairColor')
+  const selectedHairStyle = watch('hairStyle')
 
   // 입력 필드 자동 크기 조정 함수 (예상 답안보다 20% 더 길게)
   const adjustInputWidth = (input: HTMLInputElement) => {
@@ -33,6 +42,9 @@ export default function Step1Page() {
       name: 80,      // 예상: 5-8자 → 80px → 20% 증가 = 96px
       age: 40,       // 예상: 1-2자 → 40px → 20% 증가 = 48px
       town: 100,     // 예상: 5-10자 → 100px → 20% 증가 = 120px
+      gender: 60,    // 예상: 3-4자 → 60px → 20% 증가 = 72px
+      hairColor: 80, // 예상: 3-8자 → 80px → 20% 증가 = 96px
+      hairStyle: 80, // 예상: 3-8자 → 80px → 20% 증가 = 96px
       color: 80,     // 예상: 3-8자 → 80px → 20% 증가 = 96px
       food: 100,     // 예상: 5-12자 → 100px → 20% 증가 = 120px
       hobby: 120,    // 예상: 8-15자 → 120px → 20% 증가 = 144px
@@ -113,7 +125,7 @@ export default function Step1Page() {
         input.removeEventListener('change', handleInput)
       })
     }
-  }, [colorOptions, foodOptions, hobbyOptions, selectedColor, selectedFood, selectedHobby]) // 값 변경 시에도 재설정
+  }, [colorOptions, foodOptions, hobbyOptions, hairColorOptions, hairStyleOptions, selectedGender, selectedColor, selectedFood, selectedHobby, selectedHairColor, selectedHairStyle]) // 값 변경 시에도 재설정
 
   // 초기 옵션은 기본값으로 표시되므로 자동 로드하지 않음
   // refresh 버튼을 눌렀을 때만 API 호출
@@ -166,6 +178,38 @@ export default function Step1Page() {
     }
   }
 
+  const loadHairColorOptions = async () => {
+    setLoadingHairColor(true)
+    try {
+      const result = await generateQuestionOptions('hairColor')
+      // AI가 생성한 옵션 5개를 설정
+      const options = result.options || []
+      setHairColorOptions(options.slice(0, 5)) // 최대 5개만 표시
+    } catch (error) {
+      console.error('Failed to load hair color options:', error)
+      // 에러 발생 시 기본값으로 복원
+      setHairColorOptions(defaultOptions.hairColor)
+    } finally {
+      setLoadingHairColor(false)
+    }
+  }
+
+  const loadHairStyleOptions = async () => {
+    setLoadingHairStyle(true)
+    try {
+      const result = await generateQuestionOptions('hairStyle')
+      // AI가 생성한 옵션 5개를 설정
+      const options = result.options || []
+      setHairStyleOptions(options.slice(0, 5)) // 최대 5개만 표시
+    } catch (error) {
+      console.error('Failed to load hair style options:', error)
+      // 에러 발생 시 기본값으로 복원
+      setHairStyleOptions(defaultOptions.hairStyle)
+    } finally {
+      setLoadingHairStyle(false)
+    }
+  }
+
   const onSubmit = (data: UserInfo) => {
     navigate('/step2', { state: { userInfo: data } })
   }
@@ -184,26 +228,58 @@ export default function Step1Page() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* 필수 필드 - Name */}
+          {/* 필수 필드 - Name & Gender */}
           <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="flex items-center gap-4">
-              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                </svg>
-                <span>Name</span>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Name 필드 */}
+              <div className="flex items-center gap-4">
+                <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                  <span>Name</span>
+                </div>
+                <div className="flex-1 border-l-2 border-orange-200 pl-4">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[16.94px] text-gray-600">My name is</span>
+                    <input
+                      type="text"
+                      {...register('name', { required: 'Please enter your name' })}
+                      name="name"
+                      className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                      style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
+                      placeholder=""
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 border-l-2 border-orange-200 pl-4">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[16.94px] text-gray-600">My name is</span>
-                  <input
-                    type="text"
-                    {...register('name', { required: 'Please enter your name' })}
-                    name="name"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
-                    style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
-                    placeholder=""
-                  />
+              {/* Gender 필드 */}
+              <div className="flex items-center gap-4">
+                <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                  <span>Gender</span>
+                </div>
+                <div className="flex-1 border-l-2 border-orange-200 pl-4">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[16.94px] text-gray-600">I am a</span>
+                    <div className="relative inline-block">
+                      <select
+                        {...register('gender')}
+                        name="gender"
+                        className="px-3 py-2 pr-8 rounded-lg border-2 border-orange-300 bg-orange-50 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-800 text-sm font-medium cursor-pointer shadow-sm hover:bg-orange-100 hover:border-orange-400 transition-all duration-200 appearance-none"
+                        style={{ minWidth: '100px', WebkitAppearance: 'none', MozAppearance: 'none' }}
+                      >
+                        <option value="" className="bg-white text-gray-600">Select</option>
+                        <option value="boy" className="bg-white text-gray-800 py-2">boy</option>
+                        <option value="girl" className="bg-white text-gray-800 py-2">girl</option>
+                      </select>
+                      <svg className="w-5 h-5 text-orange-500 pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -238,6 +314,153 @@ export default function Step1Page() {
             </div>
             {errors.age && (
               <p className="mt-1 text-sm text-red-500 ml-28">{errors.age.message}</p>
+            )}
+          </div>
+
+          {/* 선택 필드 - Hair Color */}
+          <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+                <span>Hair Color</span>
+              </div>
+              <div className="flex-1 border-l-2 border-orange-200 pl-4">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[16.94px] text-gray-600">My hair is</span>
+                  <input
+                    type="text"
+                    {...register('hairColor')}
+                    name="hairColor"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
+                    placeholder=""
+                  />
+                  <button
+                    type="button"
+                    onClick={loadHairColorOptions}
+                    disabled={loadingHairColor}
+                    className="w-7 h-7 rounded-lg bg-orange-300 hover:bg-orange-400 disabled:bg-orange-200 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 transition-all shadow-sm hover:shadow-md active:scale-95"
+                    title="새로운 옵션 생성"
+                  >
+                    {loadingHairColor ? (
+                      <svg className="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+            {loadingHairColor && (
+              <div className="ml-28 text-sm text-gray-500">Creating new options...</div>
+            )}
+            {!loadingHairColor && hairColorOptions.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2 ml-28">
+                {hairColorOptions.map((option, index) => (
+                  <button
+                    key={`hairColor-${index}-${option}`}
+                    type="button"
+                    onClick={() => {
+                      setValue('hairColor', option)
+                      // 값 설정 후 크기 조정
+                      setTimeout(() => {
+                        const input = document.querySelector<HTMLInputElement>('input[name="hairColor"]')
+                        if (input && adjustInputWidthRef.current) {
+                          adjustInputWidthRef.current(input)
+                        }
+                      }, 0)
+                    }}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      selectedHairColor === option
+                        ? 'bg-green-600 text-white'
+                        : 'bg-green-100 text-green-800 hover:bg-green-200'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 선택 필드 - Hair Style */}
+          <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+                <span>Hair Style</span>
+              </div>
+              <div className="flex-1 border-l-2 border-orange-200 pl-4">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[16.94px] text-gray-600">I have</span>
+                  <input
+                    type="text"
+                    {...register('hairStyle')}
+                    name="hairStyle"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
+                    placeholder=""
+                  />
+                  <span className="text-[16.94px] text-gray-600">hair.</span>
+                  <button
+                    type="button"
+                    onClick={loadHairStyleOptions}
+                    disabled={loadingHairStyle}
+                    className="w-7 h-7 rounded-lg bg-orange-300 hover:bg-orange-400 disabled:bg-orange-200 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 transition-all shadow-sm hover:shadow-md active:scale-95"
+                    title="새로운 옵션 생성"
+                  >
+                    {loadingHairStyle ? (
+                      <svg className="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+            {loadingHairStyle && (
+              <div className="ml-28 text-sm text-gray-500">Creating new options...</div>
+            )}
+            {!loadingHairStyle && hairStyleOptions.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2 ml-28">
+                {hairStyleOptions.map((option, index) => (
+                  <button
+                    key={`hairStyle-${index}-${option}`}
+                    type="button"
+                    onClick={() => {
+                      setValue('hairStyle', option)
+                      // 값 설정 후 크기 조정
+                      setTimeout(() => {
+                        const input = document.querySelector<HTMLInputElement>('input[name="hairStyle"]')
+                        if (input && adjustInputWidthRef.current) {
+                          adjustInputWidthRef.current(input)
+                        }
+                      }, 0)
+                    }}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      selectedHairStyle === option
+                        ? 'bg-green-600 text-white'
+                        : 'bg-green-100 text-green-800 hover:bg-green-200'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
@@ -311,7 +534,7 @@ export default function Step1Page() {
               </div>
             </div>
             {loadingColor && (
-              <div className="ml-28 text-sm text-gray-500">AI가 새로운 옵션을 생성 중...</div>
+              <div className="ml-28 text-sm text-gray-500">Creating new options...</div>
             )}
             {!loadingColor && colorOptions.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2 ml-28">
@@ -384,7 +607,7 @@ export default function Step1Page() {
               </div>
             </div>
             {loadingFood && (
-              <div className="ml-28 text-sm text-gray-500">AI가 새로운 옵션을 생성 중...</div>
+              <div className="ml-28 text-sm text-gray-500">Creating new options...</div>
             )}
             {!loadingFood && foodOptions.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2 ml-28">
@@ -457,7 +680,7 @@ export default function Step1Page() {
               </div>
             </div>
             {loadingHobby && (
-              <div className="ml-28 text-sm text-gray-500">AI가 새로운 옵션을 생성 중...</div>
+              <div className="ml-28 text-sm text-gray-500">Creating new options...</div>
             )}
             {!loadingHobby && hobbyOptions.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2 ml-28">
