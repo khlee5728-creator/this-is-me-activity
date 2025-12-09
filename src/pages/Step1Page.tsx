@@ -215,10 +215,10 @@ export default function Step1Page() {
   }
 
   return (
-    <div className="w-[1280px] h-[800px] px-4 py-6 overflow-y-auto" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)' }}>
-      <div className="max-w-3xl mx-auto">
+    <div className="w-[1280px] h-[800px] px-4 py-6 overflow-y-auto flex flex-col" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)' }}>
+      <div className="w-full mx-auto flex-1 flex flex-col">
         {/* 헤더 */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-6 flex-shrink-0 max-w-4xl mx-auto w-full">
           <div className="bg-orange-500 text-white font-bold py-2 px-4 rounded-lg shadow-md">
             Step 1
           </div>
@@ -227,65 +227,72 @@ export default function Step1Page() {
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-4xl mx-auto flex-1">
           {/* 필수 필드 - Name & Gender */}
           <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="grid grid-cols-2 gap-4">
               {/* Name 필드 */}
-              <div className="flex items-center gap-4">
-                <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                  <span>Name</span>
-                </div>
-                <div className="flex-1 border-l-2 border-orange-200 pl-4">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[16.94px] text-gray-600">My name is</span>
-                    <input
-                      type="text"
-                      {...register('name', { required: 'Please enter your name' })}
-                      name="name"
-                      className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
-                      style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
-                      placeholder=""
-                    />
+              <div>
+                <div className="flex items-center gap-4">
+                  <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    <span>Name</span>
                   </div>
-                </div>
-              </div>
-              {/* Gender 필드 */}
-              <div className="flex items-center gap-4">
-                <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                  <span>Gender</span>
-                </div>
-                <div className="flex-1 border-l-2 border-orange-200 pl-4">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[16.94px] text-gray-600">I am a</span>
-                    <div className="relative inline-block">
-                      <select
-                        {...register('gender')}
-                        name="gender"
-                        className="px-3 py-2 pr-8 rounded-lg border-2 border-orange-300 bg-orange-50 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-800 text-sm font-medium cursor-pointer shadow-sm hover:bg-orange-100 hover:border-orange-400 transition-all duration-200 appearance-none"
-                        style={{ minWidth: '100px', WebkitAppearance: 'none', MozAppearance: 'none' }}
-                      >
-                        <option value="" className="bg-white text-gray-600">Select</option>
-                        <option value="boy" className="bg-white text-gray-800 py-2">boy</option>
-                        <option value="girl" className="bg-white text-gray-800 py-2">girl</option>
-                      </select>
-                      <svg className="w-5 h-5 text-orange-500 pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-                      </svg>
+                  <div className="flex-1 border-l-2 border-orange-200 pl-4">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[16.94px] text-gray-600">My name is</span>
+                      <input
+                        type="text"
+                        {...register('name', { required: 'Please enter your name' })}
+                        name="name"
+                        className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[16.94px]"
+                        style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
+                        placeholder=""
+                      />
                     </div>
                   </div>
                 </div>
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-500 ml-28">{errors.name.message}</p>
+                )}
+              </div>
+              {/* Gender 필드 */}
+              <div>
+                <div className="flex items-center gap-4">
+                  <div className="bg-orange-300 text-[#5D4037] font-bold text-[16.94px] py-2 px-4 rounded-lg min-w-[100px] text-center flex-shrink-0 flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    <span>Gender</span>
+                  </div>
+                  <div className="flex-1 border-l-2 border-orange-200 pl-4">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[16.94px] text-gray-600">I am a</span>
+                      <div className="relative inline-block">
+                        <select
+                          {...register('gender', { required: 'Please select your gender' })}
+                          name="gender"
+                          className="px-3 py-2 pr-8 rounded-lg border-2 border-orange-300 bg-orange-50 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-800 text-sm font-medium cursor-pointer shadow-sm hover:bg-orange-100 hover:border-orange-400 transition-all duration-200 appearance-none"
+                          style={{ minWidth: '100px', WebkitAppearance: 'none', MozAppearance: 'none' }}
+                        >
+                          <option value="" className="bg-white text-gray-600">Select</option>
+                          <option value="boy" className="bg-white text-gray-800 py-2">boy</option>
+                          <option value="girl" className="bg-white text-gray-800 py-2">girl</option>
+                        </select>
+                        <svg className="w-5 h-5 text-orange-500 pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {errors.gender && (
+                  <p className="mt-1 text-sm text-red-500 ml-28">{errors.gender.message}</p>
+                )}
               </div>
             </div>
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-500 ml-28">{errors.name.message}</p>
-            )}
           </div>
 
           {/* 필수 필드 - Age */}
@@ -715,7 +722,7 @@ export default function Step1Page() {
           <div className="flex justify-end mt-6">
             <button
               type="submit"
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
+              className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-10 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 disabled:transform-none"
             >
               Next →
             </button>

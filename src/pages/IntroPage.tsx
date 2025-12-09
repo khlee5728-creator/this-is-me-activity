@@ -30,7 +30,7 @@ export default function IntroPage() {
         <div className="absolute bottom-8 right-8">
           <button
             onClick={handleStart}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-12 rounded-xl text-xl shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
           >
             Tap to Start
           </button>

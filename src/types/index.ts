@@ -10,7 +10,7 @@ export interface UserInfo {
   hobby?: string
 }
 
-export type ImageStyle = 'pixar' | 'pixelart' | 'superhero' | 'lego' | 'stickerpack'
+export type ImageStyle = 'pixar' | 'pixelart' | 'superhero' | 'lego' | 'stickerpack' | 'disney'
 
 export interface GeneratedImage {
   imageUrl: string

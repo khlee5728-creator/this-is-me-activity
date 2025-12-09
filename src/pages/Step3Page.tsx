@@ -9,60 +9,89 @@ export default function Step3Page() {
   const navigate = useNavigate()
   const userInfo = location.state?.userInfo as UserInfo
   const introduction = location.state?.introduction as string
+  const selectedStyle = location.state?.selectedStyle as ImageStyle | null
   const captureRef = useRef<HTMLDivElement>(null)
+  const hasGeneratedRef = useRef(false)
   const [isDownloading, setIsDownloading] = useState(false)
-  const [selectedStyle, setSelectedStyle] = useState<ImageStyle | null>(null)
-  const [showResult, setShowResult] = useState(false)
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const styles: { value: ImageStyle; label: string }[] = [
-    { value: 'pixar', label: 'Pixar' },
-    { value: 'pixelart', label: 'Pixel Art' },
-    { value: 'superhero', label: 'Super Hero' },
-    { value: 'lego', label: 'Lego' },
-    { value: 'stickerpack', label: 'Sticker Pack' },
-  ]
-
-  const handleStyleSelect = async (style: ImageStyle) => {
-    if (!introduction) {
-      setError('자기소개 텍스트가 없습니다.')
+  // 컴포넌트 마운트 시 선택된 스타일로 이미지 생성
+  useEffect(() => {
+    // 이미 생성했으면 실행하지 않음
+    if (hasGeneratedRef.current) {
       return
     }
 
-    setSelectedStyle(style)
-    setIsGenerating(true)
-    setError(null)
-    setShowResult(false)
+    const createImage = async () => {
+      if (!introduction || !selectedStyle) {
+        setError('자기소개 텍스트 또는 스타일이 없습니다.')
+        return
+      }
 
-    try {
-      const result = await generateImageFromText(introduction, style)
-      setGeneratedImage(result.imageUrl)
-      setShowResult(true)
-    } catch (err: any) {
-      console.error('Image generation error:', err)
-      setError(err?.message || '이미지 생성 중 오류가 발생했습니다.')
-      setSelectedStyle(null)
-    } finally {
-      setIsGenerating(false)
+      hasGeneratedRef.current = true
+      setIsGenerating(true)
+      setError(null)
+
+      try {
+        const result = await generateImageFromText(introduction, selectedStyle)
+        setGeneratedImage(result.imageUrl)
+      } catch (err: any) {
+        console.error('Image generation error:', err)
+        setError(err?.message || '이미지 생성 중 오류가 발생했습니다.')
+        hasGeneratedRef.current = false // 에러 시 다시 시도 가능하도록
+      } finally {
+        setIsGenerating(false)
+      }
     }
-  }
+
+    createImage()
+  }, [introduction, selectedStyle])
 
   const handleDownload = async () => {
     if (!captureRef.current) return
 
     setIsDownloading(true)
     try {
-      const canvas = await html2canvas(captureRef.current, {
+      const element = captureRef.current
+      const rect = element.getBoundingClientRect()
+      
+      // 모든 패널의 테두리와 그림자 일시 제거
+      const panels = element.querySelectorAll('[class*="border-2"]')
+      const originalStyles: Array<{ element: HTMLElement; border: string; boxShadow: string }> = []
+      
+      panels.forEach((panel) => {
+        const el = panel as HTMLElement
+        originalStyles.push({
+          element: el,
+          border: el.style.border,
+          boxShadow: el.style.boxShadow
+        })
+        el.style.border = 'none'
+        el.style.boxShadow = 'none'
+      })
+      
+      const canvas = await html2canvas(element, {
         backgroundColor: '#FFF9E6',
-        scale: 2,
+        scale: 1,
         useCORS: true,
         logging: false,
-        width: captureRef.current.scrollWidth,
-        height: captureRef.current.scrollHeight,
-        windowWidth: captureRef.current.scrollWidth,
-        windowHeight: captureRef.current.scrollHeight,
+        allowTaint: true,
+        removeContainer: true,
+        imageTimeout: 0,
+        x: 0,
+        y: 0,
+        width: rect.width,
+        height: rect.height,
+        windowWidth: rect.width,
+        windowHeight: rect.height,
+      })
+      
+      // 스타일 복원
+      originalStyles.forEach(({ element, border, boxShadow }) => {
+        element.style.border = border
+        element.style.boxShadow = boxShadow
       })
       
       const url = canvas.toDataURL('image/png', 1.0)
@@ -84,7 +113,7 @@ export default function Step3Page() {
     navigate('/')
   }
 
-  if (!userInfo || !introduction) {
+  if (!userInfo || !introduction || !selectedStyle) {
     return (
       <div className="w-[1280px] h-[800px] bg-[#F5F5DC] flex items-center justify-center">
         <div className="text-center">
@@ -101,94 +130,67 @@ export default function Step3Page() {
   }
 
   return (
-    <div className="w-[1280px] h-[800px] flex flex-col overflow-hidden" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)' }}>
-      {/* 타이틀 */}
-      <h1 className="text-5xl md:text-6xl font-bold text-black text-center py-6 font-serif flex-shrink-0 drop-shadow-md">
-        THIS IS ME!
-      </h1>
+    <div className="w-[1280px] h-[800px] flex flex-col overflow-hidden px-4 py-6" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)' }}>
+      <div className="w-full mx-auto flex-1 flex flex-col">
+        {/* 타이틀 */}
+        <h1 className="text-5xl md:text-6xl font-bold text-black text-center py-4 font-serif flex-shrink-0 drop-shadow-md">
+          THIS IS ME!
+        </h1>
 
-      {!showResult ? (
-        /* 스타일 선택 화면 */
-        <div className="flex-1 flex flex-col items-center justify-center px-8 pb-4 min-h-0">
-          <div className="max-w-3xl w-full">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Choose Character Style</h2>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                {error}
-              </div>
-            )}
-            {isGenerating && (
-              <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg mb-4 text-center">
-                <div className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span>Creating your image...</span>
+        {/* 결과 표시 화면 (캡처 대상) */}
+        <div ref={captureRef} className="flex-1 min-h-0 mb-4 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)', width: '100%', maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+              {error}
+            </div>
+          )}
+          {isGenerating ? (
+            <div className="flex flex-col items-center justify-center">
+              {/* 재미있는 애니메이션 */}
+              <div className="relative mb-6">
+                {/* 회전하는 별들 */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-6xl animate-spin" style={{ animationDuration: '2s' }}>
+                    ⭐
+                  </div>
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-5xl animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}>
+                    ✨
+                  </div>
+                </div>
+                {/* 중앙 펄스 애니메이션 */}
+                <div className="relative z-10">
+                  <div className="text-7xl animate-bounce">
+                    🎨
+                  </div>
+                </div>
+                {/* 주변 떠다니는 이모지들 */}
+                <div className="absolute -top-4 -left-4 text-4xl animate-bounce" style={{ animationDelay: '0.2s', animationDuration: '1.2s' }}>
+                  🖌️
+                </div>
+                <div className="absolute -top-4 -right-4 text-4xl animate-bounce" style={{ animationDelay: '0.4s', animationDuration: '1.3s' }}>
+                  🎭
+                </div>
+                <div className="absolute -bottom-4 -left-4 text-4xl animate-bounce" style={{ animationDelay: '0.6s', animationDuration: '1.4s' }}>
+                  🌈
+                </div>
+                <div className="absolute -bottom-4 -right-4 text-4xl animate-bounce" style={{ animationDelay: '0.8s', animationDuration: '1.1s' }}>
+                  🎪
                 </div>
               </div>
-            )}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <div className="space-y-3">
-                {styles.map((style) => {
-                  const styleIcons = {
-                    pixar: (
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" />
-                      </svg>
-                    ),
-                    pixelart: (
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 2h4v4H2V2zm6 0h4v4H8V2zm6 0h4v4h-4V2zM2 8h4v4H2V8zm6 0h4v4H8V8zm6 0h4v4h-4V8zM2 14h4v4H2v-4zm6 0h4v4H8v-4zm6 0h4v4h-4v-4z" />
-                      </svg>
-                    ),
-                    superhero: (
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                    ),
-                    lego: (
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v4H7V5zm8 12v-4H5v4h10z" clipRule="evenodd" />
-                      </svg>
-                    ),
-                    stickerpack: (
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2H4zm3 2h10v9H7V4zm2 2v7h6V6H9z" clipRule="evenodd" />
-                      </svg>
-                    ),
-                  }
-                  return (
-                    <button
-                      key={style.value}
-                      onClick={() => handleStyleSelect(style.value)}
-                      disabled={isGenerating}
-                      className={`w-full py-4 px-6 rounded-xl font-semibold text-left transition-all duration-200 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${
-                        selectedStyle === style.value
-                          ? 'bg-orange-400 text-white shadow-lg scale-105 border-2 border-orange-500'
-                          : 'bg-yellow-100 text-gray-700 hover:bg-yellow-200 border-2 border-transparent hover:border-orange-200'
-                      }`}
-                    >
-                      {styleIcons[style.value]}
-                      <span>{style.label}</span>
-                    </button>
-                  )
-                })}
-              </div>
+              <p className="text-orange-600 font-bold text-xl animate-pulse">Creating your character...</p>
+              <p className="text-orange-500 text-sm mt-2">Please wait a moment! ✨</p>
             </div>
-          </div>
-        </div>
-      ) : (
-        /* 결과 표시 화면 (캡처 대상) */
-        <div ref={captureRef} className="flex-1 flex items-center justify-center px-8 pb-4 min-h-0" style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFD9A5 100%)' }}>
-          <div className="grid grid-cols-2 gap-6 w-full max-w-[1200px]">
+          ) : (
+            <div className="grid grid-cols-2 gap-4 w-full" style={{ maxWidth: '1200px', width: '100%', alignItems: 'start' }}>
             {/* 왼쪽 패널: 생성된 이미지 */}
-            <div className="bg-white rounded-2xl p-6 border-2 border-orange-200 shadow-xl flex items-center justify-center overflow-hidden min-h-[400px]">
+            <div className="bg-white rounded-2xl p-4 border-2 border-orange-200 shadow-lg flex items-center justify-center overflow-hidden min-h-[300px] max-h-[500px]">
               {generatedImage ? (
                 <img
                   src={generatedImage}
                   alt="Generated"
-                  className="w-full h-auto max-h-[600px] object-contain rounded-lg"
+                  className="w-full h-auto max-h-[450px] object-contain rounded-lg"
                 />
               ) : (
                 <div className="text-center text-gray-400">
@@ -199,20 +201,20 @@ export default function Step3Page() {
             </div>
 
             {/* 오른쪽 패널: 자기소개 텍스트 */}
-            <div className="bg-white rounded-2xl p-8 border-2 border-orange-200 shadow-xl flex items-start">
-              <div className="space-y-4 text-lg text-gray-800 leading-relaxed w-full">
-                <p className="break-words py-2 whitespace-normal whitespace-pre-wrap">
+            <div className="rounded-2xl p-4 border-2 border-orange-200 shadow-lg flex items-start min-w-0" style={{ width: '100%', maxWidth: '100%', backgroundColor: '#ffffff', background: '#ffffff', minHeight: 'fit-content', height: 'auto' }}>
+              <div className="text-lg leading-relaxed w-full min-w-0" style={{ width: '100%', wordWrap: 'break-word', overflowWrap: 'break-word', backgroundColor: '#ffffff', background: '#ffffff', minHeight: 'fit-content', height: 'auto' }}>
+                <p className="break-words py-2 whitespace-pre-wrap" style={{ wordWrap: 'break-word', overflowWrap: 'break-word', maxWidth: '100%', color: '#1f2937', backgroundColor: '#ffffff', background: '#ffffff', margin: 0, padding: 0 }}>
                   {introduction}
                 </p>
               </div>
             </div>
           </div>
+        )}
         </div>
-      )}
 
-      {/* 버튼 영역 */}
-      <div className="flex justify-center gap-6 pb-6 flex-shrink-0">
-        {showResult && (
+        {/* 버튼 영역 */}
+        {generatedImage && !isGenerating && (
+          <div className="flex justify-center gap-4 pt-4 flex-shrink-0">
           <button
             onClick={handleDownload}
             disabled={isDownloading}
@@ -223,17 +225,18 @@ export default function Step3Page() {
             </svg>
             <span>{isDownloading ? 'Downloading...' : 'Download'}</span>
           </button>
+          <button
+            onClick={handlePlayAgain}
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Play Again</span>
+          </button>
+          </div>
         )}
-        <button
-          onClick={handlePlayAgain}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>Play Again</span>
-        </button>
       </div>
     </div>
   )

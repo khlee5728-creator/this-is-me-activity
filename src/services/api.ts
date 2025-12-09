@@ -155,7 +155,7 @@ export const generateQuestionOptions = async (type: 'color' | 'food' | 'hobby' |
 // 텍스트 기반 이미지 생성 (자기소개 텍스트로 이미지 생성)
 export const generateImageFromText = async (
   introduction: string,
-  style: 'pixar' | 'pixelart' | 'superhero' | 'lego' | 'stickerpack'
+  style: 'pixar' | 'pixelart' | 'superhero' | 'lego' | 'stickerpack' | 'disney'
 ) => {
   const stylePrompts = {
     pixar: 'Create a Pixar-style 3D character illustration. Use smooth 3D rendering, glossy textures, and warm cinematic lighting. Apply a friendly and cute vibe similar to modern animated movies. Use a simple gradient or softly blurred background.',
@@ -163,6 +163,7 @@ export const generateImageFromText = async (
     superhero: 'Create a superhero-style illustration. Use bold outlines, vivid comic-book colors, and dynamic lighting. Add subtle heroic elements like a simple cape shape or strong pose, but avoid copyrighted costumes. Use a clean gradient background for focus.',
     lego: 'Create a LEGO-style 3D character illustration. Use plastic-like block textures, large round eyes, and minimal facial details. Use bright primary colors and simple shapes. Place the character on a plain white or light background.',
     stickerpack: 'Create a sticker-style character illustration. Use bold outlines, bright colors, and minimal shading. Add a white sticker border around the character. Use a transparent background so it can be used as a sticker.',
+    disney: 'Create a Disney-style character illustration. Keep the person\'s facial features recognizable but stylized with elegant proportions. Use soft pastel colors, clean outlines, and gentle shading. Make the eyes slightly larger and expressive, with a warm fairy-tale feeling. Use a soft light background with minimal details.',
   }
 
   // 자기소개 텍스트와 스타일을 조합한 프롬프트 생성

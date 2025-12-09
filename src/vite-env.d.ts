@@ -11,3 +11,10 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
+// 스케일링 시스템 전역 변수
+declare global {
+  interface Window {
+    currentScale: number
+  }
+}
+

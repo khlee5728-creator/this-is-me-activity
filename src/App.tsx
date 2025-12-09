@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
+import { initScaling } from './utils/scaling'
 import IntroPage from './pages/IntroPage'
 import Step1Page from './pages/Step1Page'
 import Step2Page from './pages/Step2Page'
@@ -10,24 +11,13 @@ function App() {
     const TARGET_WIDTH = 1280
     const TARGET_HEIGHT = 800
 
-    const updateStageScale = () => {
-      const stage = document.getElementById('stage')
-      if (!stage) return
-
-      const viewportWidth = window.innerWidth
-      const viewportHeight = window.innerHeight
-
-      // scale = min(window.innerWidth/1280, window.innerHeight/800)
-      const scaleX = viewportWidth / TARGET_WIDTH
-      const scaleY = viewportHeight / TARGET_HEIGHT
-      const scale = Math.min(scaleX, scaleY)
-
-      // 스케일 적용
-      stage.style.transform = `translateX(-50%) scale(${scale})`
-      stage.style.transformOrigin = 'top center'
-      stage.style.left = '50%'
-      stage.style.top = '0'
-    }
+    // 스케일링 시스템 초기화
+    initScaling({
+      designWidth: TARGET_WIDTH,
+      designHeight: TARGET_HEIGHT,
+      containerId: 'stage',
+      enableLog: false, // 프로덕션에서는 false
+    })
 
     const checkScroll = () => {
       const stage = document.getElementById('stage')
@@ -52,13 +42,11 @@ function App() {
       }
     }
 
-    // 즉시 실행
-    updateStageScale()
+    // 초기 스크롤 확인
     checkScroll()
     
-    // 리사이즈 이벤트 리스너 (즉시 반영)
+    // 리사이즈 이벤트 리스너 (스크롤 체크만)
     const handleResize = () => {
-      updateStageScale()
       requestAnimationFrame(() => {
         checkScroll()
       })
@@ -71,7 +59,6 @@ function App() {
     if (stage) {
       const mutationObserver = new MutationObserver(() => {
         requestAnimationFrame(() => {
-          updateStageScale()
           checkScroll()
         })
       })
@@ -85,7 +72,6 @@ function App() {
 
       // 초기 스크롤 확인 (여러 시점에서)
       const initCheck = () => {
-        updateStageScale()
         requestAnimationFrame(() => {
           checkScroll()
         })
