@@ -311,7 +311,7 @@ export default function Step1Page() {
                     type="text"
                     {...register('age', { required: 'Please enter your age' })}
                     name="age"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[16.94px]"
                     style={{ minWidth: '48px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -340,7 +340,7 @@ export default function Step1Page() {
                     type="text"
                     {...register('hairColor')}
                     name="hairColor"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[16.94px]"
                     style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -413,7 +413,7 @@ export default function Step1Page() {
                     type="text"
                     {...register('hairStyle')}
                     name="hairStyle"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[16.94px]"
                     style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -487,7 +487,7 @@ export default function Step1Page() {
                     type="text"
                     {...register('town', { required: 'Please enter where you live' })}
                     name="town"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[16.94px]"
                     style={{ minWidth: '120px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -515,7 +515,7 @@ export default function Step1Page() {
                     type="text"
                     {...register('color')}
                     name="color"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[16.94px]"
                     style={{ minWidth: '96px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -588,7 +588,7 @@ export default function Step1Page() {
                     type="text"
                     {...register('food')}
                     name="food"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[16.94px]"
                     style={{ minWidth: '120px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
@@ -661,7 +661,7 @@ export default function Step1Page() {
                     type="text"
                     {...register('hobby')}
                     name="hobby"
-                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[19.36px]"
+                    className="px-2 py-1 border-b-2 border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 text-gray-800 text-[16.94px]"
                     style={{ minWidth: '144px', width: 'auto', overflow: 'visible' }}
                     placeholder=""
                   />
