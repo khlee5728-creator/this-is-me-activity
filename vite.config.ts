@@ -14,7 +14,7 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'https://playground.ils.ai.kr',
+        target: 'https://playground.polarislabs.ai.kr',
         changeOrigin: true,
         secure: true,
         rewrite: (path) => path, // /api를 그대로 유지

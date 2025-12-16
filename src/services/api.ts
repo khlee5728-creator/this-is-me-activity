@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // 개발 환경에서는 프록시를 통해 /api로 요청, 프로덕션에서는 절대 URL 사용
 const backendUrl = import.meta.env.PROD 
-  ? 'https://playground.ils.ai.kr/api'
+  ? 'https://playground.polarislabs.ai.kr/api'
   : '/api'
 
 export const api = axios.create({

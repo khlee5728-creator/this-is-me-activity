@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { UserInfo, ImageStyle } from '../types'
 import { generateIntroduction } from '../services/api'
+import { isTTSSupported, isRecordingSupported } from '../utils/platform'
 
 export default function Step2Page() {
   const location = useLocation()
@@ -25,7 +26,12 @@ export default function Step2Page() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
   const hasGeneratedRef = useRef(false)
+
+  // 플랫폼 기능 지원 여부
+  const ttsSupported = isTTSSupported()
+  const recordingSupported = isRecordingSupported()
 
   const styles: { value: ImageStyle; label: string }[] = [
     { value: 'pixar', label: 'Pixar' },
@@ -80,6 +86,12 @@ export default function Step2Page() {
   const handlePlay = () => {
     if (!introduction) return
 
+    // TTS 미지원 환경 체크
+    if (!ttsSupported) {
+      alert('이 환경에서는 음성 재생이 지원되지 않습니다.')
+      return
+    }
+
     if (isPlaying) {
       // 일시정지
       if (synthRef.current) {
@@ -94,21 +106,21 @@ export default function Step2Page() {
         utterance.rate = 0.9 // 초등학생에게 적합한 속도
         utterance.pitch = 1.0
         utterance.volume = 1.0
-        
+
         utterance.onend = () => {
           setIsPlaying(false)
           if (isRecording) {
             handleStopRecording()
           }
         }
-        
+
         utterance.onerror = () => {
           setIsPlaying(false)
           if (isRecording) {
             handleStopRecording()
           }
         }
-        
+
         utteranceRef.current = utterance
         synthRef.current.speak(utterance)
         setIsPlaying(true)
@@ -117,28 +129,39 @@ export default function Step2Page() {
   }
 
   const handleStartRecording = async () => {
+    // 녹음 미지원 환경 체크
+    if (!recordingSupported) {
+      alert('이 환경에서는 녹음 기능이 지원되지 않습니다.')
+      return
+    }
+
     try {
-      // 오디오 스트림 캡처 (시스템 오디오 + 마이크)
-      const stream = await navigator.mediaDevices.getDisplayMedia({
+      // getUserMedia만 사용 (getDisplayMedia는 iOS에서 미지원)
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          sampleRate: 44100,
         },
-        video: false,
-      }).catch(async () => {
-        // getDisplayMedia가 실패하면 마이크만 사용
-        return await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            sampleRate: 44100,
-          },
-        })
       })
 
+      streamRef.current = stream
       audioChunksRef.current = []
-      const mediaRecorder = new MediaRecorder(stream)
+
+      // MIME 타입 선택 (플랫폼별 호환성)
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm')
+          ? 'audio/webm'
+          : MediaRecorder.isTypeSupported('audio/mp4')
+            ? 'audio/mp4'
+            : ''
+
+      const recorderOptions: MediaRecorderOptions = {}
+      if (mimeType) {
+        recorderOptions.mimeType = mimeType
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, recorderOptions)
       mediaRecorderRef.current = mediaRecorder
 
       mediaRecorder.ondataavailable = (event) => {
@@ -148,24 +171,29 @@ export default function Step2Page() {
       }
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: mimeType || 'audio/webm',
+        })
         const audioUrl = URL.createObjectURL(audioBlob)
         setRecordedAudioUrl(audioUrl)
-        
+
         // 스트림 정리
-        stream.getTracks().forEach(track => track.stop())
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((track) => track.stop())
+          streamRef.current = null
+        }
       }
 
       mediaRecorder.start()
       setIsRecording(true)
-      
+
       // TTS 재생 시작
-      if (!isPlaying) {
+      if (!isPlaying && ttsSupported) {
         handlePlay()
       }
     } catch (error) {
       console.error('Recording error:', error)
-      alert('녹음 기능을 사용할 수 없습니다. 브라우저 권한을 확인해주세요.')
+      alert('녹음 기능을 사용할 수 없습니다. 마이크 권한을 확인해주세요.')
     }
   }
 
@@ -174,7 +202,13 @@ export default function Step2Page() {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
     }
-    
+
+    // 스트림 정리
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+    }
+
     // TTS 중지
     if (synthRef.current) {
       synthRef.current.cancel()
@@ -315,10 +349,10 @@ export default function Step2Page() {
                 {/* 재생/일시정지 버튼 */}
                 <button
                   onClick={handlePlay}
-                  disabled={!introduction}
+                  disabled={!introduction || !ttsSupported}
                   className="w-10 h-10 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-all duration-200 active:scale-95"
                   aria-label={isPlaying ? 'Pause' : 'Play'}
-                  title={isPlaying ? 'Pause' : 'Play'}
+                  title={!ttsSupported ? 'TTS not supported' : isPlaying ? 'Pause' : 'Play'}
                 >
                   {isPlaying ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -336,10 +370,10 @@ export default function Step2Page() {
                 {!isRecording ? (
                   <button
                     onClick={handleStartRecording}
-                    disabled={!introduction || isPlaying}
+                    disabled={!introduction || isPlaying || !recordingSupported}
                     className="w-10 h-10 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-all duration-200 active:scale-95"
                     aria-label="Start Recording"
-                    title="Start Recording"
+                    title={!recordingSupported ? 'Recording not supported' : 'Start Recording'}
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />

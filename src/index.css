@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* === 모바일 크로스 플랫폼 호환성 CSS === */
+
+/* Safe Area 변수 (노치, 홈 인디케이터 대응) */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+/* 터치 최적화 */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* 더블탭 줌 방지 */
+* {
+  touch-action: manipulation;
+}
+
+/* 버튼/링크 터치 최적화 */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+/* iOS 입력 필드 줌 방지 (16px 미만 시 자동 줌됨) */
+input, textarea, select {
+  font-size: 16px;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -12,6 +45,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
   background-color: #F5F5DC;
+  /* 모바일 최적화 */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 #root {
@@ -99,4 +137,26 @@ video::after {
 /* 비디오가 로드되기 전의 배경도 흰색으로 */
 video:not([src]) {
   background-color: white !important;
+}
+
+/* iOS Safari 100vh 문제 대응 */
+@supports (-webkit-touch-callout: none) {
+  #root {
+    height: -webkit-fill-available;
+  }
+}
+
+/* 가로/세로 모드 전환 시 Safe Area 대응 */
+@media screen and (orientation: landscape) {
+  #root {
+    padding-left: var(--sal);
+    padding-right: var(--sar);
+  }
+}
+
+@media screen and (orientation: portrait) {
+  #root {
+    padding-top: var(--sat);
+    padding-bottom: var(--sab);
+  }
 }

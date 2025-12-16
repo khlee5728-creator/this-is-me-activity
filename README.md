@@ -6,7 +6,7 @@
 ## 기술 스택
 - **Frontend**: React + TypeScript + Vite + Tailwind CSS
 - **AI**: OpenAI (백엔드 API를 통해 호출)
-- **Backend API**: https://playground.ils.ai.kr/api
+- **Backend API**: https://playground.polarislabs.ai.kr/api
 
 ## 설치 및 실행
 
@@ -68,7 +68,7 @@ src/
 - `POST /api/chat/completions`: Chat Completions API를 통한 문항 옵션 생성 (Color, Food, Hobby)
 - `POST /api/images/generations`: Images Generations API를 통한 이미지 스타일 변환
 
-백엔드 URL: `https://playground.ils.ai.kr/api`
+백엔드 URL: `https://playground.polarislabs.ai.kr/api`
 
 ## 개발 환경
 - Node.js 18+
